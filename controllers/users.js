@@ -66,7 +66,13 @@ export const getSearchUser = async (req, res) => {
   try {
     const { userName } = req.params;
     const searchUsers = await User.find({
-      firstName: { $regex: userName, $options: "i" },
+      "$expr": {
+        "$regexMatch": {
+          "input": { "$concat": ["$firstName", " ", "$lastName"] },
+          "regex": userName,
+          "options": "i",
+        }
+      }
     });
 
     const formattedFriends = searchUsers.map(
